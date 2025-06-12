@@ -8,7 +8,8 @@ researcher:
     the most relevant information about {company}.
     Known for your ability to find the most relevant
     information and present it in a clear and concise manner.
-  llm: groq/Llama3-8b-8192
+  llm: groq/gemma2-9b-it
+  # llama3-8b-8192
 
 analyst:
   role: >
@@ -21,4 +22,4 @@ analyst:
     and company research. You have a talent for identifying patterns and extracting
     meaningful insights from research data, then communicating
     those insights through well crafted reports.
-  llm: groq/Llama3-8b-8192
+  llm: groq/gemma2-9b-it
