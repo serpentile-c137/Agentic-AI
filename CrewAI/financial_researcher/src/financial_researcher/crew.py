@@ -2,15 +2,19 @@ from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
-# from crewai_tools import SerperDevTool
+from crewai_tools import SerperDevTool
+
+
 
 # from dotenv import load_dotenv
 
 # load_dotenv()
 
-# import os
+import os
 # groq_api_key=os.getenv("GROQ_API_KEY")
 # llm = LLM(model="groq/Llama3-8b-8192")
+os.environ["SERPER_API_KEY"] = os.getenv('SERPER_API_KEY')
+
 
 @CrewBase
 class FinancialResearcher():
@@ -24,7 +28,7 @@ class FinancialResearcher():
         return Agent(
             config=self.agents_config['researcher'],
             verbose=True,
-            # tools=[SerperDevTool()]
+            tools=[SerperDevTool()]
         )
 
     @agent
