@@ -8,9 +8,24 @@ from crewai.memory import LongTermMemory, ShortTermMemory, EntityMemory
 from crewai.memory.storage.rag_storage import RAGStorage
 from crewai.memory.storage.ltm_sqlite_storage import LTMSQLiteStorage
 import os
-# groq_api_key=os.getenv("GROQ_API_KEY")
-# llm = LLM(model="groq/Llama3-8b-8192")
+
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 os.environ["SERPER_API_KEY"] = os.getenv('SERPER_API_KEY')
+os.environ["GEMINI_API_KEY"] = os.getenv('GEMINI_API_KEY')
+
+# Check if API keys are set
+required_keys = ["GEMINI_API_KEY", "GROQ_API_KEY", "SERPER_API_KEY"]
+for key in required_keys:
+    if os.getenv(key):
+        print(f"✅ {key} is set")
+    else:
+        print(f"❌ {key} is not set")
+
+print(GEMINI_API_KEY)
 
 class TrendingCompany(BaseModel):
     """ A company that is in the news and attracting attention """
@@ -103,22 +118,25 @@ class StockPicker():
             # Short-term memory for current context using RAG
             short_term_memory = ShortTermMemory(
                 storage = RAGStorage(
-                        embedder_config={
-                            "provider": "openai",
-                            "config": {
-                                "model": 'text-embedding-3-small'
-                            }
-                        },
-                        type="short_term",
-                        path="./memory/"
-                    )
-                ),            # Entity memory for tracking key information about entities
+                    embedder_config={
+                        "provider": "google",
+                        "config": {
+                            "model": "models/embedding-001",
+                            "task_type": "retrieval_document",
+                            "api_key": GEMINI_API_KEY
+                        }
+                    },
+                    type="short_term",
+                    path="./memory/"
+                )
+            ),          # Entity memory for tracking key information about entities
             entity_memory = EntityMemory(
                 storage=RAGStorage(
                     embedder_config={
-                        "provider": "openai",
+                        "provider": "google",
                         "config": {
-                            "model": 'text-embedding-3-small'
+                            "model": 'models/embedding-001',
+                            "api_key": GEMINI_API_KEY
                         }
                     },
                     type="short_term",

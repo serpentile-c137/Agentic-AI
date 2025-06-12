@@ -3,13 +3,13 @@ import sys
 import warnings
 
 from datetime import datetime
-
+import os
 from stock_picker.crew import StockPicker
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-import os
+
 
 # Check if API keys are set
 required_keys = ["GEMINI_API_KEY", "GROQ_API_KEY", "SERPER_API_KEY"]
