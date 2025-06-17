@@ -9,6 +9,7 @@ dependencies = [
     "gradio>=5.31.0",
     "groq>=0.25.0",
     "ipykernel>=6.29.5",
+    "langchain-community>=0.3.25",
     "langchain-groq>=0.3.2",
     "langgraph>=0.4.8",
     "markdown>=3.8",
