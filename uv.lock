@@ -32,6 +32,7 @@ dependencies = [
     { name = "polygon-api-client" },
     { name = "pydantic" },
     { name = "resend" },
+    { name = "smithery" },
     { name = "streamlit" },
     { name = "tiktoken" },
 ]
@@ -58,6 +59,7 @@ requires-dist = [
     { name = "polygon-api-client", specifier = ">=1.14.6" },
     { name = "pydantic", specifier = ">=2.11.5" },
     { name = "resend", specifier = ">=2.10.0" },
+    { name = "smithery", specifier = ">=0.1.0" },
     { name = "streamlit", specifier = ">=1.45.1" },
     { name = "tiktoken", specifier = ">=0.9.0" },
 ]
@@ -2437,6 +2439,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031, upload-time = "2024-12-04T17:35:28.174Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050, upload-time = "2024-12-04T17:35:26.475Z" },
+]
+
+[[package]]
+name = "smithery"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6e/58/1ff767164d03b7314a7c210664a68552cd1c883b99b394ac163cbf4c3387/smithery-0.1.0.tar.gz", hash = "sha256:56f1b9ddbc84dfeddf0f1b298dd1d5eddf53731a431b7c46ae55f7d367860e42", size = 2606, upload-time = "2025-03-07T14:38:20.778Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ed/d9/df9919f0521f41523a88d458f684b433cdcd4e20a3217933a751f5ecdda2/smithery-0.1.0-py3-none-any.whl", hash = "sha256:43193f83989e8638431680b408ed28f090c3a5aad378c3bd2fb8ed346d495b2f", size = 3135, upload-time = "2025-03-07T14:38:19.597Z" },
 ]
 
 [[package]]
