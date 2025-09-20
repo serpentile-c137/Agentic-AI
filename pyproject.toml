@@ -10,6 +10,7 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "dotenv>=0.9.9",
     "gradio>=5.31.0",
+    "grandalf>=0.8",
     "groq>=0.25.0",
     "grpcio-tools>=1.71.0",
     "ipykernel>=6.29.5",
