@@ -5,10 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "agno>=2.2.8",
     "autogen-agentchat>=0.6.1",
     "autogen-ext>=0.6.1",
     "beautifulsoup4>=4.13.4",
+    "ddgs>=9.7.1",
     "dotenv>=0.9.9",
+    "duckduckgo-search>=8.1.1",
     "gradio>=5.31.0",
     "grandalf>=0.8",
     "groq>=0.25.0",
@@ -31,4 +34,5 @@ dependencies = [
     "smithery>=0.1.0",
     "streamlit>=1.45.1",
     "tiktoken>=0.9.0",
+    "yfinance>=0.2.66",
 ]
