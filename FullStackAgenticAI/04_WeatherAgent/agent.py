@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 import json
 import os
+import subprocess
 
 load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -16,8 +17,13 @@ client = OpenAI(
 )
 
 def run_command(cmd: str):
-    result = os.system(cmd)
-    return result
+    # Return command output as string (capture stdout/stderr)
+    try:
+        completed = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+        output = completed.stdout.strip() or completed.stderr.strip() or f"Exit code: {completed.returncode}"
+        return output
+    except Exception as e:
+        return f"run_command error: {e}"
 
 
 def get_weather(city: str):
@@ -98,41 +104,100 @@ while True:
     message_history.append({ "role": "user", "content": user_query })
 
     while True:
-        response = client.chat.completions.parse(
-            model="gpt-4o",
-            response_format=MyOutputFormat,
+        # Use a standard completion request and parse the assistant's text output
+        response = client.chat.completions.create(
+            model="gemini-2.5-flash",
             messages=message_history
         )
 
-        raw_result = response.choices[0].message.content
+        # Extract raw assistant text (robust to different response shapes)
+        raw_result = None
+        try:
+            choice = response.choices[0]
+            # try attribute-style access
+            if hasattr(choice, "message"):
+                msg = choice.message
+                if isinstance(msg, dict):
+                    raw_result = msg.get("content")
+                else:
+                    raw_result = getattr(msg, "content", None)
+            # dict-style fallback
+            if raw_result is None:
+                try:
+                    raw_result = choice.get("message", {}).get("content")
+                except Exception:
+                    raw_result = None
+            # fallback to text field
+            if raw_result is None:
+                raw_result = getattr(choice, "text", None) or (choice.get("text") if isinstance(choice, dict) else None)
+        except Exception:
+            raw_result = None
+
+        # Ensure we have a string to append/parse
+        if raw_result is None:
+            # As a last resort, stringify the whole response
+            raw_result = str(response)
         message_history.append({"role": "assistant", "content": raw_result})
-        
-        parsed_result = response.choices[0].message.parsed
 
-        if parsed_result.step == "START":
-            print("🔥", parsed_result.content)
-            continue
+        # Parse the assistant output into one or more MyOutputFormat objects.
+        parsed_list = []
+        try:
+            # Try single JSON object first
+            parsed_list = [MyOutputFormat.parse_raw(raw_result)]
+        except Exception:
+            # Try to parse line-separated JSON objects, then JSON-like {...} blocks (non-greedy)
+            import re
+            parsed_list = []
+            lines = [l.strip() for l in raw_result.splitlines() if l.strip()]
+            for line in lines:
+                try:
+                    parsed_list.append(MyOutputFormat.parse_raw(line))
+                except Exception:
+                    continue
+            if not parsed_list:
+                # find JSON-like blocks
+                for m in re.finditer(r'\{.*?\}', raw_result, re.DOTALL):
+                    block = m.group(0)
+                    try:
+                        parsed_list.append(MyOutputFormat.parse_raw(block))
+                    except Exception:
+                        continue
 
-        if parsed_result.step == "TOOL":
-            tool_to_call = parsed_result.tool
-            tool_input = parsed_result.input
-            print(f"🛠️: {tool_to_call} ({tool_input})")
+        if not parsed_list:
+            print("Failed to parse assistant output as JSON. Raw output:")
+            print(raw_result)
+            break
 
-            tool_response = available_tools[tool_to_call](tool_input)
-            print(f"🛠️: {tool_to_call} ({tool_input}) = {tool_response}")
-            message_history.append({ "role": "developer", "content": json.dumps(
-                { "step": "OBSERVE", "tool": tool_to_call, "input": tool_input, "output": tool_response}
-            ) })
-            continue
+        # Process each parsed JSON object sequentially
+        stop_inner = False
+        for parsed_result in parsed_list:
+            if parsed_result.step == "START":
+                print("🔥", parsed_result.content)
+                continue
 
+            if parsed_result.step == "TOOL":
+                tool_to_call = parsed_result.tool
+                tool_input = parsed_result.input
+                print(f"🛠️: {tool_to_call} ({tool_input})")
 
+                tool_response = available_tools.get(tool_to_call)(tool_input)
+                print(f"🛠️: {tool_to_call} ({tool_input}) = {tool_response}")
+                message_history.append({ "role": "developer", "content": json.dumps(
+                    { "step": "OBSERVE", "tool": tool_to_call, "input": tool_input, "output": tool_response}
+                ) })
+                # After TOOL we continue to next parsed object (if any)
+                continue
 
-        if parsed_result.step == "PLAN":
-            print("🧠", parsed_result.content)
-            continue
+            if parsed_result.step == "PLAN":
+                print("🧠", parsed_result.content)
+                continue
 
-        if parsed_result.step == "OUTPUT":
-            print("🤖", parsed_result.content)
+            if parsed_result.step == "OUTPUT":
+                print("🤖", parsed_result.content)
+                stop_inner = True
+                break
+
+        if stop_inner:
             break
 
 print("\n\n\n")
