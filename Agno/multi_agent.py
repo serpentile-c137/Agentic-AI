@@ -19,7 +19,7 @@ web_agent = Agent(
     description="you are an assistant that helps people find information on the internet",
     instructions="Always include the sources you used to find the information in your final answer.",
     tools=[DuckDuckGoTools()],
-    show_tool_calls=True,
+    # show_tool_calls=True,
     markdown=True,
 )
 
@@ -29,7 +29,7 @@ finance_agent = Agent(
     instructions="Use tables to display data",
     # tools=[YFinanceTools(stock_prices=True, company_info=True, analyst_recommendations=True,  stock_fundamentals=True)],
     tools=[YFinanceTools()],
-    show_tool_calls=True,
+    # show_tool_calls=True,
     markdown=True,
 )
 
@@ -38,7 +38,7 @@ agent_team = Team(
     members=[web_agent, finance_agent],
     model=model,
     instructions=['Always include the sources you used to find the information in your final answer.', 'Use tables to display data'],
-    show_tool_calls=True,
+    # show_tool_calls=True,
     markdown=True,
 )
 
